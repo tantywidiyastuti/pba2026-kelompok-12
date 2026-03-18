@@ -27,7 +27,7 @@ Both approaches will be evaluated and compared on the same dataset to determine 
 Dataset used in this project will be sourced from public NLP datasets such as Kaggle, Hugging Face Datasets, or other open repositories.
 
 Dataset Link:
-*(to be added)*
+(https://github.com/okkyibrohim/id-multi-label-hate-speech-and-abusive-language-detection?tab=readme-ov-file)
 
 ---
 
