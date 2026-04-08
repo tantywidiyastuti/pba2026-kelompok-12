@@ -2,13 +2,21 @@
 
 Natural Language Processing Project — Institut Teknologi Sumatera (ITERA)
 
+---
+
 ## Project Description
 
-This project aims to compare the performance of **Machine Learning (ML)** and **Deep Learning (DL)** approaches for Natural Language Processing (NLP) tasks.
+This project aims to conduct a systematic comparison between **Machine Learning (ML)** and **Deep Learning (DL)** approaches for text classification tasks in Natural Language Processing (NLP), specifically focusing on hate speech detection in Indonesian Twitter data.
 
-Machine Learning models will be implemented using **PyCaret AutoML**, while the Deep Learning model will be implemented using **PyTorch**.
+The dataset used in this study is derived from the paper:
 
-Both approaches will be evaluated and compared on the same dataset to determine which method performs better for the selected text classification task.
+**"Multi-label Hate Speech and Abusive Language Detection in Indonesian Twitter"** by Ibrohim & Budi (2019).
+
+Although the dataset provides multi-label annotations (HS, Abusive, Target, Category, Level), this project strategically reformulates the task into a **binary classification problem (Hate Speech vs Non-Hate Speech)**. This decision is motivated by the need to improve model stability, reduce label complexity, and enable clearer benchmarking between ML and DL approaches.
+
+Machine Learning models are implemented using **PyCaret AutoML** with TF-IDF-based feature engineering, while the Deep Learning model is developed using **PyTorch**, leveraging sequence-based architectures such as LSTM.
+
+Both approaches are evaluated under the same experimental setup to determine the most effective and robust method for hate speech detection in the Indonesian social media context.
 
 ---
 
@@ -16,18 +24,39 @@ Both approaches will be evaluated and compared on the same dataset to determine 
 
 | Name                     | NIM       | GitHub Username |
 | ------------------------ | --------- | --------------- |
-| Tanty Widiyastuti        | 123450094 | tantywidiyastuti|
-| Mayada                   | 121450145 | -               |
-| Adisty Syawalda Ariyanto | 121450136 | adistyS         |
+| Tanty Widiyastuti        | 123450094 | tantywidiyastuti |
+| Mayada                   | 121450145 | iterastudent |
+| Adisty Syawalda Ariyanto | 121450136 | adistyS |
 
 ---
 
 ## Dataset
 
-Dataset used in this project will be sourced from public NLP datasets such as Kaggle, Hugging Face Datasets, or other open repositories.
+The dataset used in this project is publicly available and originates from:
 
-Dataset Link:
-(https://github.com/okkyibrohim/id-multi-label-hate-speech-and-abusive-language-detection?tab=readme-ov-file)
+https://github.com/okkyibrohim/id-multi-label-hate-speech-and-abusive-language-detection
+
+### Dataset Characteristics
+
+- Language: Indonesian (informal, social media text)
+- Source: Twitter
+- Annotation types:
+  - Hate Speech (HS)
+  - Abusive Language
+  - Target
+  - Category
+  - Level
+
+### Task Definition
+
+This project focuses on:
+
+> Binary classification: Hate Speech (HS) vs Non-Hate Speech
+
+This formulation is chosen to:
+- improve model robustness  
+- simplify evaluation  
+- enable consistent comparison across modeling approaches  
 
 ---
 
@@ -35,12 +64,14 @@ Dataset Link:
 
 The objectives of this project are:
 
-* Perform **Exploratory Data Analysis (EDA)** on the selected dataset
-* Implement **Machine Learning models using PyCaret AutoML**
-* Implement **Deep Learning models using PyTorch**
-* Compare the performance between ML and DL models
-* Deploy interactive demos using **Hugging Face Spaces**
-* Publish a scientific report in **ArXiv format**
+- Perform **Exploratory Data Analysis (EDA)** on the dataset  
+- Develop a comprehensive **text preprocessing pipeline**  
+- Implement **Machine Learning models using PyCaret AutoML**  
+- Implement **Deep Learning models using PyTorch**  
+- Address **class imbalance issues** to reduce false negatives  
+- Compare performance between ML and DL approaches  
+- Deploy interactive demos using **Hugging Face Spaces**  
+- Produce a scientific report in **LaTeX (ArXiv format)**  
 
 ---
 
@@ -80,65 +111,93 @@ pba2026-nama-kelompok 12
 
 ## Machine Learning Approach
 
-Machine Learning models will be developed using **PyCaret AutoML**.
-Several algorithms will be compared automatically, and the best-performing model will be selected based on evaluation metrics.
+Machine Learning models are developed using **PyCaret AutoML**. The pipeline includes preprocessing, feature extraction, model training, and evaluation.
 
-Examples of algorithms evaluated:
+### Algorithms Evaluated
 
-* Logistic Regression
-* Random Forest
-* Support Vector Machine
-* Gradient Boosting
+- Logistic Regression  
+- Support Vector Machine (SVM)  
+- Random Forest  
+- Gradient Boosting (optional extension)  
+
+### Methodology
+
+- Text representation using **TF-IDF (unigram and bigram)**  
+- Integration of **abusive lexicon features**  
+- Handling class imbalance using **SMOTE**  
+- Model comparison using cross-validation  
+- Selection of the best model based on **F1-score**  
 
 ---
 
 ## Deep Learning Approach
 
-The Deep Learning model will be implemented using **PyTorch**.
+The Deep Learning model is implemented using **PyTorch**.
 
-Possible architectures include:
+### Candidate Architectures
 
-* LSTM
-* GRU
-* CNN for text classification
-* Lightweight Transformer models
+- LSTM (primary model)  
+- GRU  
+- CNN for text classification  
+- Lightweight Transformer (optional)  
 
-The model will be trained and evaluated using standard NLP evaluation metrics.
+### Methodology
+
+- Tokenization and sequence processing  
+- Word embedding representation  
+- Model training using backpropagation  
+- Evaluation on validation and test sets  
+
+---
+
+## Evaluation Metrics
+
+All models are evaluated using:
+
+- Accuracy  
+- Precision  
+- Recall  
+- F1-score (primary metric)  
+- Confusion Matrix  
+
+Special attention is given to minimizing **false negative predictions**, as they are critical in hate speech detection tasks.
 
 ---
 
 ## Deployment
 
-Two interactive demos will be deployed using **Hugging Face Spaces**:
+Two interactive applications will be deployed using **Hugging Face Spaces**:
 
-* **Machine Learning Model (PyCaret)**
-  *(link will be added later)*
+- Machine Learning Model (PyCaret)  
+  *(link to be added)*  
 
-* **Deep Learning Model (PyTorch)**
-  *(link will be added later)*
+- Deep Learning Model (PyTorch)  
+  *(link to be added)*  
+
+Each deployment provides an interface for real-time text classification.
 
 ---
 
 ## Scientific Paper
 
-The final project report will be written in **LaTeX using ArXiv format** and will include:
+The final report will be written in **LaTeX using ArXiv format**, including:
 
-* Dataset description
-* Methodology
-* Experiment setup
-* Benchmark results
-* Comparative analysis
+- Dataset description  
+- Methodology  
+- Experimental setup  
+- Benchmark results  
+- Comparative analysis  
 
-ArXiv Link:
-*(to be added)*
+ArXiv Link:  
+*(to be added)*  
 
 ---
 
 ## Course Information
 
-Course: **Pemrosesan Bahasa Alami**
-Program: **Sains Data — Institut Teknologi Sumatera**
+Course: **Pemrosesan Bahasa Alami**  
+Program: **Sains Data — Institut Teknologi Sumatera**  
 Semester: **Genap 2025/2026**
 
-Instructor:
+Instructor:  
 Martin C.T. Manullang
