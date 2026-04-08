@@ -3,8 +3,8 @@ title: ITera NLP Hate Speech Detection
 emoji: 🛡️
 colorFrom: blue
 colorTo: indigo
-sdk: streamlit
-sdk_version: 1.32.0
+sdk: gradio
+sdk_version: 4.20.0
 app_file: app/ml_demo/app.py
 pinned: false
 ---
