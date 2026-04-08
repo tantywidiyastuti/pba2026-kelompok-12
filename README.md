@@ -123,7 +123,8 @@ The model will be trained and evaluated using standard NLP evaluation metrics.
 Two interactive demos will be deployed using **Hugging Face Spaces**:
 
 * **Machine Learning Model (PyCaret)**
-  *(link will be added later)*
+  
+  [deploy](https://huggingface.co/spaces/TantyWidiyastuti/NLP-Hate-Speech-Detection)
 
 * **Deep Learning Model (PyTorch)**
   *(link will be added later)*
