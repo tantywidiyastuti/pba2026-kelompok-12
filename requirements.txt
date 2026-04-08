@@ -1,0 +1,6 @@
+streamlit>=1.30.0
+pycaret[full]
+pandas
+scikit-learn
+python-dotenv
+joblib
