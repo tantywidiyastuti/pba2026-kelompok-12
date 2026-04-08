@@ -47,7 +47,7 @@ The objectives of this project are:
 ## Repository Structure
 
 ```
-pba2026-[nama-kelompok]
+pba2026-nama-kelompok 12
 │
 ├── data
 │   ├── raw
