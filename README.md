@@ -146,6 +146,26 @@ ArXiv Link:
 
 ---
 
+## Pemanfaatan Penggunaan AI
+
+Dalam penyelesaian proyek ini, tim kami memanfaatkan teknologi *Generative AI* (Kecerdasan Buatan Generatif) sebagai asisten pengembangan utama. Pemanfaatan AI dalam pengerjaan proyek ini mencakup:
+* **Pengembangan dan Refactoring Kode**: Membantu menulis kode dan skrip yang efisien, termasuk menata ulang *framework* dari Streamlit ke Gradio untuk kebutuhan antarmuka interaktif.
+* **Debugging dan Resolusi Konflik Server**: Mengidentifikasi berbagai solusi secara presisi untuk konflik *library* tingkat lanjut (*dependency hell*) pada saat mengatur repositori untuk *deployment* di Hugging Face Spaces.
+* **Penyusunan Dokumentasi**: Membantu dalam penambahan komentar pada kode, merapikan deskripsi *README*, dan penataan format.
+
+*Penting dicatat: Semua hasil rumusan kode dan ide (output) yang diberikan oleh asisten AI telah ditinjau per baris, dipahami algoritmanya, dan divalidasi secara manual oleh anggota tim untuk memastikan aplikasi beroperasi sesuai dengan tujuan pembelajaran NLP yang diharapkan.*
+
+**Lihat histori prompt di sini:**
+
+1. *"ganti saja streamlit , jadi Gradio yang akan di deploy ke hunggingface-nya"*
+2. *"saya ingin memasukkan file secara manuall ke dalam hunggingfacenya , file apa saja yang harus saya masukkan"*
+3. *"note: This error originates from a subprocess, and is likely not a problem with pip. error: metadata-generation-failed × Encountered error while generating package metadata. ╰─> pandas"*
+4. *"--> ERROR: process "/bin/sh -c pip install --no-cache-dir -r /tmp/requirements.txt streamlit==1.32.0 spaces" did not complete successfully: exit code: 1"*
+5. *"--> ERROR: docker.io/library/python:3.1: not found"*
+6. *"Exit code: 1. Reason: Traceback (most recent call last): File "/app/app/ml_demo/app.py", line 5 ... ImportError: cannot import name 'HfFolder' from 'huggingface_hub'"*
+7. *"TypeError: unhashable type: 'dict' ... ValueError: When localhost is not accessible, a shareable link must be created."*
+---
+
 ## Course Information
 
 Course: **Pemrosesan Bahasa Alami**
