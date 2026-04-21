@@ -1,15 +1,3 @@
----
-title: ITera NLP Hate Speech Detection
-emoji: 🛡️
-colorFrom: blue
-colorTo: indigo
-sdk: gradio
-sdk_version: 4.20.0
-app_file: app/ml_demo/app.py
-pinned: false
-python_version: 3.10.12
----
-
 # NLP Text Classification Benchmark
 
 Natural Language Processing Project — Institut Teknologi Sumatera (ITERA)
@@ -122,12 +110,10 @@ Model checkpoints are logged automatically via callbacks and saved as `.h5` file
 Two interactive Application User Interfaces (UI) will be deployed using **Hugging Face Spaces** built upon the **Gradio** framework:
 
 1. **Machine Learning Model (PyCaret UI)**
-   *(link will be added later)*
-   - See folder `app/ml_demo`
+   [Live Demo: NLP-Hate-Speech-Detection](https://huggingface.co/spaces/TantyWidiyastuti/NLP-Hate-Speech-Detection)
 
 2. **Deep Learning Model (TensorFlow/Keras UI)** 
-   *(link will be added later)*
-   - See folder `app/dl_demo`
+   [Live Demo: NLP-Hate-speech-Detection-DL](https://huggingface.co/spaces/TantyWidiyastuti/NLP-Hate-speech-Detection-DL)
 
 ---
 
