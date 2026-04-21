@@ -7,6 +7,7 @@ sdk: gradio
 sdk_version: 4.20.0
 app_file: app/ml_demo/app.py
 pinned: false
+python_version: 3.10.12
 ---
 
 # NLP Text Classification Benchmark
@@ -15,11 +16,11 @@ Natural Language Processing Project — Institut Teknologi Sumatera (ITERA)
 
 ## Project Description
 
-This project aims to compare the performance of **Machine Learning (ML)** and **Deep Learning (DL)** approaches for Natural Language Processing (NLP) tasks.
+This project aims to compare the performance of **Machine Learning (ML)** and **Deep Learning (DL)** approaches for Natural Language Processing (NLP) tasks, specifically for identifying Hate Speech and Abusive Language in Indonesian Tweets.
 
-Machine Learning models will be implemented using **PyCaret AutoML**, while the Deep Learning model will be implemented using **PyTorch**.
+Machine Learning models are implemented using **PyCaret AutoML**, while the Deep Learning models are implemented using **TensorFlow/Keras** with a custom CNN-BiLSTM architecture.
 
-Both approaches will be evaluated and compared on the same dataset to determine which method performs better for the selected text classification task.
+Both approaches are evaluated and compared on the same dataset to determine which method performs better for the selected text classification task.
 
 ---
 
@@ -35,10 +36,9 @@ Both approaches will be evaluated and compared on the same dataset to determine 
 
 ## Dataset
 
-Dataset used in this project will be sourced from public NLP datasets such as Kaggle, Hugging Face Datasets, or other open repositories.
+Dataset used in this project is sourced from a public NLP open repository focusing on Indonesian multi-label hate speech.
 
-Dataset Link:
-(https://github.com/okkyibrohim/id-multi-label-hate-speech-and-abusive-language-detection?tab=readme-ov-file)
+Dataset Link: [id-multi-label-hate-speech-and-abusive-language-detection](https://github.com/okkyibrohim/id-multi-label-hate-speech-and-abusive-language-detection?tab=readme-ov-file)
 
 ---
 
@@ -48,7 +48,7 @@ The objectives of this project are:
 
 * Perform **Exploratory Data Analysis (EDA)** on the selected dataset
 * Implement **Machine Learning models using PyCaret AutoML**
-* Implement **Deep Learning models using PyTorch**
+* Implement **Deep Learning models using TensorFlow / Keras (CNN-BiLSTM)**
 * Compare the performance between ML and DL models
 * Deploy interactive demos using **Hugging Face Spaces**
 * Publish a scientific report in **ArXiv format**
@@ -58,32 +58,36 @@ The objectives of this project are:
 ## Repository Structure
 
 ```
-pba2026-nama-kelompok 12
+pba2026-kelompok-12/
 │
-├── data
-│   ├── raw
-│   └── processed
+├── data/
+│   ├── raw/                 # Base datasets and dictionaries (e.g., new_kamusalay.csv)
+│   └── processed/           # Cleaned data ready for modeling
 │
-├── notebooks
+├── notebooks/
 │   ├── 01_eda.ipynb
 │   ├── 02_preprocessing.ipynb
 │   ├── 03_pycaret_model.ipynb
-│   └── 04_deep_learning.ipynb
+│   └── train_dl_kaggle.ipynb # Deep Learning training environment (Kaggle compatible)
 │
-├── src
-│   ├── preprocessing.py
-│   ├── train_ml.py
-│   ├── train_dl.py
-│   └── utils.py
+├── src/
+│   ├── preprocessing.py     # Central preprocessing scripts
+│   ├── train_ml.py          # PyCaret model training pipeline
+│   └── train_dl.py          # TensorFlow / Keras model training pipeline
 │
-├── models
+├── models/
+│   ├── model_ml/            # Saved PyCaret models (.pkl)
+│   └── model_dl/            # Saved TensorFlow models (.h5) & Tokenizer (.pkl)
 │
-├── app
-│   ├── ml_demo
-│   └── dl_demo
+├── results_dl/              # Output charts, confusion matrices, and training curves
 │
-├── paper
+├── app/
+│   ├── ml_demo/             # Gradio App bundle for Machine Learning HF Space
+│   └── dl_demo/             # Gradio App bundle for Deep Learning HF Space
 │
+├── paper/                   # Standardized scientific report (ArXiv format)
+│
+├── requirements.txt         # Dependencies for local development & training
 └── README.md
 ```
 
@@ -91,42 +95,39 @@ pba2026-nama-kelompok 12
 
 ## Machine Learning Approach
 
-Machine Learning models will be developed using **PyCaret AutoML**.
-Several algorithms will be compared automatically, and the best-performing model will be selected based on evaluation metrics.
+Machine Learning models are developed using **PyCaret AutoML**.
+Several algorithms are compared automatically, with the **LightGBM** classifier yielding the best performance based on evaluation metrics for tabular TF-IDF representations.
 
-Examples of algorithms evaluated:
-
-* Logistic Regression
-* Random Forest
-* Support Vector Machine
-* Gradient Boosting
+* **Pipeline:** TF-IDF Vectorizer + Abusive Word Count Feature
+* **Best Model:** LightGBM Node
+* **Strategy:** Binary Relevance
 
 ---
 
 ## Deep Learning Approach
 
-The Deep Learning model will be implemented using **PyTorch**.
+The Deep Learning model is implemented using **TensorFlow/Keras**.
 
-Possible architectures include:
+We designed a hybrid **CNN-BiLSTM** architecture specifically suited for short social media texts.
+* **Conv1D** is utilized to capture local spatial features (n-grams/discriminative phrases).
+* **BiLSTM** captures bidirectional sequential contexts.
+* **Size:** Parameter count is explicitly restricted to under 10 million (~2.12M params).
 
-* LSTM
-* GRU
-* CNN for text classification
-* Lightweight Transformer models
-
-The model will be trained and evaluated using standard NLP evaluation metrics.
+Model checkpoints are logged automatically via callbacks and saved as `.h5` files.
 
 ---
 
 ## Deployment
 
-Two interactive demos will be deployed using **Hugging Face Spaces**:
+Two interactive Application User Interfaces (UI) will be deployed using **Hugging Face Spaces** built upon the **Gradio** framework:
 
-* **Machine Learning Model (PyCaret)**
-  *(link will be added later)*
+1. **Machine Learning Model (PyCaret UI)**
+   *(link will be added later)*
+   - See folder `app/ml_demo`
 
-* **Deep Learning Model (PyTorch)**
-  *(link will be added later)*
+2. **Deep Learning Model (TensorFlow/Keras UI)** 
+   *(link will be added later)*
+   - See folder `app/dl_demo`
 
 ---
 
@@ -140,8 +141,28 @@ The final project report will be written in **LaTeX using ArXiv format** and wil
 * Benchmark results
 * Comparative analysis
 
-ArXiv Link:
-*(to be added)*
+ArXiv Link: *(to be added)*
+
+---
+
+## Pemanfaatan Penggunaan AI
+
+Dalam penyelesaian proyek ini, tim kami memanfaatkan teknologi *Generative AI* (Kecerdasan Buatan Generatif) sebagai asisten pengembangan utama. Pemanfaatan AI dalam pengerjaan proyek ini mencakup:
+* **Pengembangan dan Refactoring Kode**: Membantu merancang arsitektur Deep Learning (CNN-BiLSTM < 10 juta parameter), mengkonversi Streamlit ke **Gradio**, serta men-setup integrasi model `tf.keras` dengan `PyCaret AutoML`.
+* **Debugging Secara Mandiri**: Mengidentifikasi konfigurasi konflik versi Keras (DTypePolicy/batch_shape metadata), memperbaiki `KeyError` pada array evaluasi metric Keras, serta mencari pemecahan dependencies konflik tingkat lanjut (*dependency hell*) pada container Hugging Face Spaces.
+* **Penyusunan Dokumentasi & Struktur Direktori**: Merapikan *repository* sesuai standar rekayasa perangkat lunak (pemisahan _Local Training_ dan _HuggingFace Bundle_), dan merapikan deskripsi *README*.
+
+*Penting dicatat: Semua hasil rumusan kode dan ide (output) yang diberikan oleh asisten AI telah ditinjau per baris, dipahami algoritmanya, dan divalidasi secara manual oleh anggota tim untuk memastikan model beroperasi sesuai dengan tujuan pembelajaran NLP yang diharapkan.*
+
+**Lihat beberapa histori prompt di sini:**
+
+1. *"ganti saja streamlit, jadi Gradio yang akan di deploy ke hunggingface-nya"*
+2. *"buatkan kode untuk train_dl di src/train_dl.py dengan mengarah pada data data/raw, berikan rekomendasi model yang fit"*
+3. *"saya ingin model yang kurang dari 10 juta parameter"*
+4. *"note: This error originates from a subprocess... error: metadata-generation-failed... pandas"*
+5. *"Exit code: 1. Reason: ImportError: cannot import name 'HfFolder' from 'huggingface_hub'"*
+6. *"buatkan satu folder yang mana isi dari folder tersebut bisa saya masukkan ke dalam space hunggingface saya untuk deploy khusus dl, telusuri semua file dan buatkan app.py- sekalian khusus deep learning ini"*
+7. *"Model: GAGAL — cnn_bilstm_HS_best.h5: Error when deserializing class 'Embedding'... Unknown dtype policy: 'DTypePolicy'"*
 
 ---
 

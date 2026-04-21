@@ -1,6 +1,6 @@
-gradio
-pycaret[full]
-pandas
-scikit-learn
-python-dotenv
-joblib
+pycaret==3.3.2
+lightgbm==4.3.0
+pandas==2.2.2
+numpy==1.26.4
+joblib==1.4.2
+gradio==4.20.0

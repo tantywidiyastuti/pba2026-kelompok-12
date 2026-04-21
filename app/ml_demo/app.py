@@ -1,56 +1,85 @@
+"""
+app.py — HuggingFace Spaces: PyCaret Hate Speech Detector (ML)
+==================================================================
+Deploy-ready Gradio app untuk mendeteksi hate speech pada teks 
+bahasa Indonesia menggunakan Machine Learning (PyCaret).
+
+Struktur folder yang di-upload ke Space:
+    /
+    ├── app.py                       ← file ini
+    ├── requirements.txt
+    ├── README.md
+    ├── models/
+    │   ├── best_model_HS.pkl
+    │   └── tfidf_vectorizer.pkl
+    └── data/
+        ├── new_kamusalay.csv
+        └── abusive.csv
+"""
+
 import os
 import re
-import sys
+import joblib
 import pandas as pd
 import gradio as gr
-import joblib
 from pycaret.classification import load_model, predict_model
 
-# === KONFIGURASI PATH ===
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-DATA_RAW_DIR = os.path.join(BASE_DIR, "data", "raw")
-MODELS_DIR = os.path.join(BASE_DIR, "models")
+# ── Path ──────────────────────────────────────────────────────
+BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR   = os.path.join(BASE_DIR, "models")
+DATA_DIR    = os.path.join(BASE_DIR, "data")
 
-# Stopwords List Asli
+SLANG_PATH      = os.path.join(DATA_DIR,  "new_kamusalay.csv")
+ABUSIVE_PATH    = os.path.join(DATA_DIR,  "abusive.csv")
+TFIDF_PATH      = os.path.join(MODEL_DIR, "tfidf_vectorizer.pkl")
+MODEL_HS_PATH   = os.path.join(MODEL_DIR, "best_model_HS") # Jangan tambahkan .pkl, dimuat oleh PyCaret otomatis
+
 STOPWORDS_ID = {
     "yang", "dan", "di", "ke", "dari", "itu", "ini", "dengan", "adalah",
     "ada", "tidak", "juga", "untuk", "pada", "dalam", "sudah", "atau",
     "saya", "aku", "kamu", "dia", "mereka", "kita", "kami", "akan",
     "bisa", "telah", "bahwa", "karena", "oleh", "jadi", "lagi", "ya",
-    "jangan", "tapi", "kalau", "mau", "aja", "deh",
-    "sih", "lah", "dong", "nih", "kan", "nya", "yg", "dgn", "utk",
-    "rt", "user", "url"
+    "jangan", "tapi", "kalau", "mau", "aja", "deh", "sih", "lah",
+    "dong", "nih", "kan", "nya", "yg", "dgn", "utk", "rt", "user", "url"
 }
 
-# === HELPER FUNCTIONS (PREPROCESSING) ===
+# =============================================================
+# Load komponen saat startup
+# =============================================================
+print("[+] Loading komponen model PyCaret...")
+
 def load_dictionaries():
-    """Load slang and abusive dictionaries."""
-    slang_path = os.path.join(DATA_RAW_DIR, "new_kamusalay.csv")
-    abusive_path = os.path.join(DATA_RAW_DIR, "abusive.csv")
-    
-    # Load Slang
-    df_slang = pd.read_csv(slang_path, header=None, names=["slang", "formal"], encoding="latin-1")
+    df_slang = pd.read_csv(SLANG_PATH, header=None, names=["slang", "formal"], encoding="latin-1")
     slang_dict = dict(zip(df_slang["slang"].str.lower(), df_slang["formal"].str.lower()))
     
-    # Load Abusive
-    df_abusive = pd.read_csv(abusive_path, encoding="latin-1")
-    col = df_abusive.columns[0]
-    abusive_set = set(df_abusive[col].str.lower().str.strip().tolist())
-    
+    df_abusive = pd.read_csv(ABUSIVE_PATH, encoding="latin-1")
+    abusive_set = set(df_abusive.iloc[:, 0].str.lower().str.strip().tolist())
     return slang_dict, abusive_set
 
-def load_ml_components():
-    """Load TFIDF Vectorizer & PyCaret Model."""
-    # 1. Load TFIDF
-    tfidf_path = os.path.join(MODELS_DIR, "tfidf_vectorizer.pkl")
-    tfidf = joblib.load(tfidf_path)
-    
-    # 2. Load PyCaret Model 
-    model_path = os.path.join(MODELS_DIR, "best_model_HS")
-    pycaret_model = load_model(model_path)
-    
-    return tfidf, pycaret_model
+try:
+    slang_dict, abusive_set = load_dictionaries()
+    print(f"    Slang dict  : {len(slang_dict):,} entri ✅")
+except Exception as e:
+    slang_dict, abusive_set = {}, set()
 
+try:
+    tfidf = joblib.load(TFIDF_PATH)
+    model_hs = load_model(MODEL_HS_PATH)
+    models_ready = True
+    print(f"    Model/TFIDF : loaded ✅")
+except Exception as e:
+    tfidf = model_hs = None
+    models_ready = False
+    print(f"    Model/TFIDF : GAGAL — {e}")
+
+if models_ready:
+    print("[+] Startup selesai ✅")
+else:
+    print("[!] STARTUP GAGAL — periksa file PyCaret dan TFIDF.")
+
+# =============================================================
+# Preprocessing
+# =============================================================
 def clean_text(text: str) -> str:
     text = str(text).lower()
     text = re.sub(r"\buser\b|\burl\b", " ", text)
@@ -58,95 +87,162 @@ def clean_text(text: str) -> str:
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
-def preprocess_text(text: str, slang_dict: dict, abusive_set: set):
-    """Full preprocessing pipeline yielding the final feature DataFrame."""
-    # 1. Clean
+def preprocess_text(text: str):
     text_clean = clean_text(text)
-    
-    # 2. Normalize Slang
     tokens = text_clean.split()
     tokens = [slang_dict.get(tok, tok) for tok in tokens]
-    
-    # 3. Stopword Removal
     tokens = [tok for tok in tokens if tok not in STOPWORDS_ID]
     final_text = " ".join(tokens)
-    
-    # 4. Abusive Count
     abusive_count = sum(1 for tok in tokens if tok in abusive_set)
-    
     return final_text, abusive_count
 
-# Load once, Gradio will keep this in memory across calls
-try:
-    slang_dict, abusive_set = load_dictionaries()
-    tfidf, pycaret_model = load_ml_components()
-    models_loaded = True
-except Exception as e:
-    models_loaded = False
-    error_message = str(e)
+# =============================================================
+# Prediksi
+# =============================================================
+def predict_with_detail(raw_text: str):
+    if not models_ready or tfidf is None:
+        msg = (
+            "❌ **Model belum siap.** Pastikan file berikut ada:\n"
+            "- `models/best_model_HS.pkl`\n"
+            "- `models/tfidf_vectorizer.pkl`"
+        )
+        return msg, "", "", ""
 
-def analyze_text(user_input):
-    if not models_loaded:
-        return f"Error: Model or Data not successfully loaded.\nDetails: {error_message}", ""
+    if not raw_text or not raw_text.strip():
+        return "⚠️ Masukkan teks terlebih dahulu.", "", "", ""
 
-    if not user_input or user_input.strip() == "":
-        return "⚠️ Masukkan teks terlebih dahulu!", ""
-    
-    # 1. Preprocesing Text
-    cleaned_text, abusive_amount = preprocess_text(user_input, slang_dict, abusive_set)
-    
-    # 2. Extract Features
-    tfidf_matrix = tfidf.transform([cleaned_text])
+    clean, abu_count = preprocess_text(raw_text)
+    if not clean:
+        return "⚠️ Teks tidak valid setelah preprocessing.", "", "", ""
+
+    # TF-IDF Feature Extraction
+    tfidf_matrix = tfidf.transform([clean])
     feature_df = pd.DataFrame(tfidf_matrix.toarray(), columns=tfidf.get_feature_names_out())
-    feature_df["abusive_count"] = abusive_amount
+    feature_df["abusive_count"] = abu_count
     
-    # 3. Predict via PyCaret
-    predictions = predict_model(pycaret_model, data=feature_df)
+    predictions = predict_model(model_hs, data=feature_df)
     
-    # Label Output
-    pred_label = predictions['prediction_label'].iloc[0]
-    pred_score = predictions['prediction_score'].iloc[0]
-    
-    debug_info = f"- Teks Mentah: {user_input}\n- Teks Bersih & Normal: {cleaned_text}\n- Jumlah Kata Abusif: {abusive_amount}"
+    pred_label = int(predictions['prediction_label'].iloc[0])
+    pred_score = float(predictions['prediction_score'].iloc[0])
 
-    if pred_label == 1:
-        result_text = f"🚨 Deteksi: HATE SPEECH (Confidence: {pred_score*100:.1f}%)\n\nTeks ini teridentifikasi mengandung ujaran kebencian."
-    else:
-        result_text = f"✅ Deteksi: AMAN (Confidence: {pred_score*100:.1f}%)\n\nTeks ini teridentifikasi bersih dari ujaran kebencian."
+    label_hs = "🚨 HATE SPEECH" if pred_label == 1 else "✅ Bukan Hate Speech"
 
-    return result_text, debug_info
+    summary = (
+        "⚠️ Teks terdeteksi mengandung: **Hate Speech**"
+        if pred_label == 1 else
+        "✅ Teks ini **aman** — tidak mengandung hate speech."
+    )
 
-custom_css = """
+    detail = (
+        f"**Teks asli:** {raw_text}\n\n"
+        f"**Teks setelah preprocessing:** `{clean}`\n\n"
+        f"**Jumlah Kata Abusif:** `{abu_count}`\n\n"
+        f"**Dimensi Fitur (TFIDF Matrix):** `(1, {tfidf_matrix.shape[1]})`"
+    )
+
+    return (
+        summary,
+        label_hs,
+        f"{'🔴' if pred_label == 1 else '🟢'} {pred_score*100:.1f}%",
+        detail,
+    )
+
+# =============================================================
+# Gradio UI
+# =============================================================
+CSS = """
 .main-header {
-    font-family: 'Inter', sans-serif;
-    color: #ffffff;
-    background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+    padding: 28px 24px; border-radius: 16px; text-align: center;
+    margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.08);
 }
-.gradio-container {
-    font-family: 'Inter', sans-serif;
+.main-header h1 { color: #ffffff; font-size: 1.9rem; margin: 0 0 6px 0; }
+.main-header p  { color: #d1fae5; font-size: 0.95rem; margin: 0; }
+.badge {
+    display: inline-block; background: rgba(255,255,255,0.2);
+    color: #ffffff; padding: 3px 10px; border-radius: 20px;
+    font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.4); margin-top: 8px;
 }
+footer { display: none !important; }
 """
 
-with gr.Blocks(title="Hate Speech Detector", css=custom_css, theme=gr.themes.Soft()) as demo:
-    gr.HTML("<div class='main-header'><h1>🛡️ Indonesian Hate Speech Detector</h1><p>Analyze Tweets / Comments for Hate Speech using Machine Learning</p></div>")
-    
-    with gr.Row():
-        with gr.Column(scale=2):
-            input_text = gr.Textbox(lines=5, placeholder="Contoh: dasar cowok bego ga tau diri...", label="Masukkan teks yang ingin dianalisis (Bahasa Indonesia):")
-            analyze_btn = gr.Button("🔍 Analisis Teks", variant="primary")
-            
-        with gr.Column(scale=1):
-            result_output = gr.Textbox(label="Hasil Analisis")
-            debug_output = gr.Textbox(lines=4, label="Detail Proses (Debug)", interactive=False)
-            
-    analyze_btn.click(fn=analyze_text, inputs=input_text, outputs=[result_output, debug_output])
-    
-    gr.HTML("<hr><div style='text-align:center; color:grey; font-size:0.8rem;'>Powered by Hugging Face Spaces & Gradio • Model: LightGBM (via PyCaret)</div>")
+EXAMPLES = [
+    ["dasar kafir lu semua, pergi dari negeri ini!"],
+    ["hari ini cuaca bagus, semangat belajar semua!"],
+    ["anjing lu brengsek, ga tau diri!"],
+    ["selamat pagi, semoga harimu menyenangkan"],
+    ["si bego itu emang ga pantes hidup, buang-buang oksigen aja"],
+]
+
+with gr.Blocks(
+    title="🛡️ ML Hate Speech Detector",
+    css=CSS,
+    theme=gr.themes.Base(
+        primary_hue="emerald",
+        secondary_hue="zinc",
+        neutral_hue="zinc",
+    )
+) as demo:
+
+    gr.HTML("""
+    <div class="main-header">
+        <h1>🛡️ Indonesian Hate Speech Detector</h1>
+        <p>Deteksi ujaran kebencian pada teks Bahasa Indonesia berbasis Machine Learning</p>
+        <span class="badge">PyCaret · TF-IDF · LightGBM</span>
+    </div>
+    """)
+
+    with gr.Row(equal_height=False):
+        with gr.Column(scale=5):
+            input_text  = gr.Textbox(
+                label="📝 Masukkan Teks (Bahasa Indonesia)",
+                placeholder="Contoh: dasar brengsek, pergi dari sini!",
+                lines=5,
+            )
+            with gr.Row():
+                clear_btn   = gr.Button("🗑️ Bersihkan", variant="secondary", size="sm")
+                analyze_btn = gr.Button("🔍 Analisis",  variant="primary",   size="lg")
+            gr.Examples(examples=EXAMPLES, inputs=input_text, label="💡 Contoh Kalimat")
+
+        with gr.Column(scale=4):
+            summary_out = gr.Markdown(label="Hasil")
+            gr.Markdown("#### 🏷️ Hate Speech Klasifikasi")
+            hs_label = gr.Textbox(label="Prediksi",   interactive=False)
+            hs_conf  = gr.Textbox(label="Confidence", interactive=False)
+
+    with gr.Accordion("🔬 Detail Preprocessing", open=False):
+        detail_out = gr.Markdown()
+
+    with gr.Accordion("ℹ️ Tentang Model", open=False):
+        gr.Markdown("""
+| Properti | Detail |
+|---|---|
+| **Pipeline** | TF-IDF Vectorizer + Machine Learning |
+| **Tool** | PyCaret AutoML |
+| **Model Terbaik** | LightGBM (dijadikan referensi utama) |
+| **Dataset** | Indonesian Hate Speech Twitter (~13.169 tweet) |
+| **Labels Digunakan** | HS (Hate Speech) |
+| **Fitur Tambahan** | Ekstraksi `abusive_count` dari kamus abusive.csv |
+
+> **Kelompok 12 — PBA 2026 | Institut Teknologi Sumatera**
+        """)
+
+    gr.HTML("""
+    <div style="text-align:center;color:#71717a;font-size:.8rem;margin-top:20px;
+                padding-top:16px;border-top:1px solid rgba(0,0,0,.06)">
+        Powered by Hugging Face Spaces · Gradio · PyCaret
+        &nbsp;|&nbsp; Model: Machine Learning · Dataset: id-multi-label-hate-speech
+    </div>
+    """)
+
+    OUTPUTS = [summary_out, hs_label, hs_conf, detail_out]
+    analyze_btn.click(fn=predict_with_detail, inputs=input_text, outputs=OUTPUTS)
+    input_text.submit(fn=predict_with_detail, inputs=input_text, outputs=OUTPUTS)
+    clear_btn.click(
+        fn=lambda: tuple([""] * (len(OUTPUTS) + 1)),
+        outputs=[input_text] + OUTPUTS,
+    )
+
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(server_name="0.0.0.0", server_port=7860)

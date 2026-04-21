@@ -1,6 +1,25 @@
-gradio
-pycaret[full]
-pandas
-scikit-learn
-python-dotenv
-joblib
+# ==========================================
+# ITera NLP Hate Speech Detection
+# Local Development & Training Dependencies
+# ==========================================
+
+# --- Core Data & Utilities ---
+numpy==1.26.4
+pandas==2.2.2
+python-dotenv==1.0.1
+joblib==1.4.2
+
+# --- Machine Learning (PyCaret) ---
+pycaret==3.3.2
+lightgbm==4.3.0
+scikit-learn==1.4.2
+
+# --- Deep Learning (TensorFlow/Keras) ---
+# Note: Keras is automatically bundled within TensorFlow
+tensorflow==2.15.1
+
+# --- Local App Deployment Testing (Gradio/HuggingFace) ---
+gradio==4.20.0
+fastapi==0.110.3
+starlette==0.37.2
+huggingface_hub==0.23.0
