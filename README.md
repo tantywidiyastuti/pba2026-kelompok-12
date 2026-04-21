@@ -55,8 +55,7 @@ pba2026-kelompok-12/
 ├── notebooks/
 │   ├── 01_eda.ipynb
 │   ├── 02_preprocessing.ipynb
-│   ├── 03_pycaret_model.ipynb
-│   └── train_dl_kaggle.ipynb # Deep Learning training environment (Kaggle compatible)
+│   └── 03_pycaret_model.ipynb
 │
 ├── src/
 │   ├── preprocessing.py     # Central preprocessing scripts
