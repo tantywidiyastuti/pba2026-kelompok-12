@@ -17,7 +17,7 @@ Both approaches are evaluated and compared on the same dataset to determine whic
 | Name                     | NIM       | GitHub Username |
 | ------------------------ | --------- | --------------- |
 | Tanty Widiyastuti        | 123450094 | tantywidiyastuti|
-| Mayada                   | 121450145 | -               |
+| Mayada                   | 121450145 | iterastudent               |
 | Adisty Syawalda Ariyanto | 121450136 | adistyS         |
 
 ---
