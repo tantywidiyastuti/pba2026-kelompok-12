@@ -8,7 +8,7 @@ This project aims to compare the performance of **Machine Learning (ML)** and **
 
 Machine Learning models are implemented using **PyCaret AutoML**, while the Deep Learning models are implemented using **TensorFlow/Keras** with a custom CNN-BiLSTM architecture.
 
-Both approaches are evaluated and compared on the same dataset to determine which method performs better for the selected text classification task.
+Both approaches are evaluated and compared on the same dataset to determine which method performs better for the selected text classification task. Additionally, this study examines the impact of text preprocessing techniques, feature extraction methods, and model architecture design on overall performance, providing deeper insights into the effectiveness of each approach in handling real-world Indonesian social media data.
 
 ---
 
@@ -40,6 +40,8 @@ The objectives of this project are:
 * Compare the performance between ML and DL models
 * Deploy interactive demos using **Hugging Face Spaces**
 * Publish a scientific report in **ArXiv format**
+
+These additional objectives ensure the project not only focuses on building models but also on validating and interpreting their performance in a more comprehensive way.
 
 ---
 
